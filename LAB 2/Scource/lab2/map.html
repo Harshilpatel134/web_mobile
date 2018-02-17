@@ -1,0 +1,30 @@
+<html>
+<head>
+    <script src="https://api.mqcdn.com/sdk/mapquest-js/v1.1.0/mapquest.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://api.mqcdn.com/sdk/mapquest-js/v1.1.0/mapquest.css"/>
+
+    <script type="text/javascript">
+        window.onload = function() {
+            L.mapquest.key = 'OfYAG5RVGpUokfpS92YtI36jayXw8WF8';
+
+            var map = L.mapquest.map('map', {
+                center: [39.1127, -94.626804],
+                layers: L.mapquest.tileLayer('map'),
+                zoom: 12
+            });
+
+            map.addLayer(L.mapquest.trafficLayer());
+            map.addLayer(L.mapquest.incidentsLayer());
+            map.addLayer(L.mapquest.marketsLayer());
+            map.addControl(L.mapquest.control());
+            map.addControl(L.mapquest.geocodingControl({
+                position: 'topleft'
+            }));
+        }
+    </script>
+</head>
+
+<body style="border: 0; margin: 0;">
+<div id="map" style="width: 100%; height: 530px;"></div>
+</body>
+</html>
