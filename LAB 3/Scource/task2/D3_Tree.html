@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Collapsible Tree Example</title>
+
+    <style>
+
+        #chart {
+            max-width: 100%;
+            overflow:auto;
+        }
+
+        text {
+            pointer-events: none;
+        }
+
+        .grandparent text {
+            font-weight: bold;
+        }
+
+        rect {
+            stroke: #fff;
+            stroke-width: 1px;
+        }
+
+        rect.parent,
+        .grandparent rect {
+            stroke-width: 2px;
+        }
+
+        .grandparent:hover rect {
+            fill: darkgrey;
+        }
+
+        .children rect.parent,
+        .grandparent rect {
+            cursor: pointer;
+        }
+
+        .children rect.child {
+            opacity: 0;
+        }
+
+        .children rect.parent {
+        }
+
+        .children:hover rect.child {
+            opacity: 1;
+            stroke-width: 1px;
+        }
+
+        .children:hover rect.parent {
+            opacity: 0;
+        }
+
+        .legend {
+            margin-bottom:8px !important;
+        }
+
+        .legend rect {
+            stroke-width: 0px;
+        }
+
+        .legend text {
+            text-anchor: middle;
+            pointer-events: auto;
+            font-size: 13px;
+            font-family: sans-serif;
+            fill: black;
+        }
+
+        .form-group {
+            text-align:left;
+        }
+
+        .textdiv {
+            font-family: "Open Sans",Helvetica,Arial,sans-serif;
+            font-size: 14px;
+            padding: 7px;
+            cursor: pointer;
+            overflow:none;
+        }
+
+        .textdiv .title {
+            font-size: 102%;
+            font-weight: bold;
+            margin-top: 8px;
+            font-size:11px !important;
+        }
+
+        .textdiv p{
+            line-height: 13px;
+            margin:0 0 4px !important;
+            padding:0px;
+            font-size:10px !important;
+        }
+
+
+
+
+        .node circle {
+            fill: #fff;
+            stroke: steelblue;
+            stroke-width: 3px;
+        }
+
+        .node text { font: 12px sans-serif; }
+
+        .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 2px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<!-- load the d3.js library -->
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<script>
+
+    // ************** Generate the tree diagram	 *****************
+    var margin = {top: 20, right: 120, bottom: 20, left: 120},
+        width = 960 - margin.right - margin.left,
+        height = 500 - margin.top - margin.bottom;
+
+    var i = 0;
+
+    var tree = d3.layout.tree()
+        .size([height, width]);
+
+    var diagonal = d3.svg.diagonal()
+        .projection(function(d) { return [d.y, d.x]; });
+
+    var svg = d3.select("body").append("svg")
+        .attr("width", width + margin.right + margin.left)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // load the external data
+    d3.json("treeData.json", function(error, treeData) {
+        root = treeData[0];
+        update(root);
+    });
+
+    function update(source) {
+
+        // Compute the new tree layout.
+        var nodes = tree.nodes(root).reverse(),
+            links = tree.links(nodes);
+
+        // Normalize for fixed-depth.
+        nodes.forEach(function(d) { d.y = d.depth * 180; });
+
+        // Declare the nodes…
+        var node = svg.selectAll("g.node")
+            .data(nodes, function(d) { return d.id || (d.id = ++i); });
+
+        // Enter the nodes.
+        var nodeEnter = node.enter().append("g")
+            .attr("class", "node")
+            .attr("transform", function(d) {
+                return "translate(" + d.y + "," + d.x + ")"; });
+
+        nodeEnter.append("circle")
+            .attr("r", 10)
+            .style("fill", "#fff");
+
+        nodeEnter.append("text")
+            .attr("x", function(d) {
+                return d.children || d._children ? -13 : 13; })
+            .attr("dy", ".35em")
+            .attr("text-anchor", function(d) {
+                return d.children || d._children ? "end" : "start"; })
+            .text(function(d) { return d.name; })
+            .style("fill-opacity", 1);
+
+        // Declare the links…
+        var link = svg.selectAll("path.link")
+            .data(links, function(d) { return d.target.id; });
+
+        // Enter the links.
+        link.enter().insert("path", "g")
+            .attr("class", "link")
+            .attr("d", diagonal);
+
+    }
+
+</script>
+
+</body>
+</html>

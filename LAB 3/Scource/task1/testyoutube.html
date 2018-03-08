@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" data-ng-app="youtubeSearchAPP">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+<script type="text/javascript">
+    angular.module("youtubeSearchAPP", []).controller("controller", function ($scope, $http) {
+        "use strict";
+
+        var KEY = "AIzaSyCEtdgnkMdGqXRGFfUEstjxb6aClXP3n1Q";
+        var PART = "snippet";
+        var TYPE = "videos";
+
+        $scope.getVideoId = function () {
+            var Q = document.getElementById("sourceText").value;
+            var htmlString = "";
+            var i;
+            $http.get("https://www.googleapis.com/youtube/v3/search?part=" + PART + "&type=" + TYPE + "&q=" + Q + "&key=" + KEY).then(function (response) {
+                for (i = 0; i < response.data.items.length; i += 1) {
+                    htmlString += "<iframe width=\"300\" height=\"250\" src=\"https://www.youtube.com/embed/" + response.data.items[i].id.videoId + "\"></iframe>";
+                }
+                document.getElementById("youtubeVideo").innerHTML = htmlString;
+            });
+        };
+    });
+</script>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="form-group">
+<input type="text" id="sourceText" class="form-control" />
+<div data-ng-controller="controller">
+
+<input class="btn btn-primary submit" type="button" value="click" data-ng-click="getVideoId()" />
+<div id="youtubeVideo"></div>
+</div>
+</div>
+</body>
+</html>
